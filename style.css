@@ -1,0 +1,116 @@
+body {
+    height: 100vh;
+    display: block;
+
+    background-color: #f5f5f5;
+    color: #333;
+    font-family: 'Arial', sans-serif;
+}
+
+.tooltip {
+    position: absolute;
+    padding: 8px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+}
+
+form {
+    text-align: center;
+    margin-top: 160px;
+}
+
+form input {
+    font-family: 'Arial', sans-serif;
+    width: 200px;
+    height: 30px;
+    outline: 0;
+    color: #555;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+}
+
+form input:not(:first-child) {
+    margin-left: 30px;
+}
+
+button {
+    margin-left: 30px;
+    color: #fff;
+    font-size: 1em;
+    font-weight: 700;
+    font-family: 'Arial', sans-serif;
+    width: 120px;
+    height: 37px;
+    border: none;
+    border-radius: 17px;
+    outline: none;
+    background: linear-gradient(to right, #1913c9, #0f56c1);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+}
+
+form input:focus,
+button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.userInfo {
+    margin: 0 auto;
+    padding: 10px;
+}
+
+#skillChart,
+#auditChart,
+#tasksChart {
+    display: none;
+}
+
+.userSKills {
+    margin: 0 auto;
+    width: 40%;
+    padding: 10px;
+}
+
+.auditsCharts {
+    margin: 0 auto;
+    padding: 10px;
+    width: 50%;
+}
+
+.xpcount {
+    margin: 0 auto;
+    width: 75%;
+}
+
+.hidden {
+    display: none;
+}
+
+form button {
+    display: block;
+    margin: 0 auto;
+}
+#topButtons {
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: white;
+    z-index: 1000;
+}
+
+#topButtons button {
+    margin: 0 10px;
+    padding: 5px 15px;
+}

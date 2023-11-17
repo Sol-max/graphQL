@@ -1,6 +1,6 @@
 let user = []
 
-function getAllData(JWT) {
+function displayData(JWT) {
     const query = `
     {
         user{
@@ -40,14 +40,46 @@ function getAllData(JWT) {
             return response.json();
         })
         .then(data => {
-            handleQueryData(data)
+            userChart(data)
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+}
+function loginForm() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const credentials = `${username}:${password}`;
+    const encodedCredentials = btoa(credentials);
+
+    fetch("https://01.kood.tech/api/auth/signin", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Basic ${encodedCredentials}`
+        },
+    })
+        .then(response => {
+            if (!response.ok) {
+                alert("Missing or wrong credentials!");
+                return;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data) {
+                document.getElementById("loginForm").classList.add("hidden");
+                document.getElementById("logout").classList.remove("hidden");
+                document.getElementById("charts").classList.remove("hidden");
+                displayData(data);
+            }
         })
         .catch(error => {
             console.error("Error:", error);
         });
 }
 
-function handleQueryData(data) {
+function userChart(data) {
 
     user = data.data.user[0]
     const level = user.transactions.filter(element => element.type === "level" && !element.path.includes("piscine") && !element.path.includes("rust")).reduce((prevElement, currentElement) => {
@@ -63,40 +95,7 @@ function handleQueryData(data) {
     updateCharts(user);
 }
 
-function login() {
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-    const credentials = `${username}:${password}`;
-    const encodedCredentials = btoa(credentials);
-
-    fetch("https://01.kood.tech/api/auth/signin", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Basic ${encodedCredentials}`
-        },
-    })
-        .then(response => {
-            if (!response.ok) {
-                alert("Wrong credentials!");
-                return;
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data) {
-                document.getElementById("loginForm").classList.add("hidden");
-                document.getElementById("logout").classList.remove("hidden");
-                document.getElementById("charts").classList.remove("hidden");
-                getAllData(data);
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-        });
-}
-
-function logout() {
+function logoutButton() {
     document.getElementById("loginForm").classList.remove("hidden")
     document.getElementById("logout").classList.add("hidden")
     document.getElementById("charts").classList.add("hidden")
@@ -106,11 +105,11 @@ function logout() {
 
 function updateCharts(user) {
     createSkillsChart(user);
-    createAuditChart(user);
-    createTasksChart(user);
+    designAudits(user);
+    designTasks(user);
 }
 
-function genAuditRateGraph(audits) {
+function AuditGraph(audits) {
     var canvas = document.createElement('canvas');
     canvas.setAttribute('id', 'audit-chart');
     var yData = ['done', 'received'];
@@ -120,7 +119,7 @@ function genAuditRateGraph(audits) {
         yData[i] = `${arrow} ${audits[i]} MB ${el}`;
     });
         
-    var barChart = new Chart(canvas, {
+    var bars = new Chart(canvas, {
         type: 'bar',
         data: {
             labels: yData,
@@ -149,7 +148,7 @@ function genAuditRateGraph(audits) {
     return canvas
 }
 
-function genSkillsGraph(skillMap) {
+function SkillsGraph(skillMap) {
     var canvas = document.createElement('canvas');
     canvas.setAttribute('id', 'skill-chart');
     var yData = [];
@@ -201,7 +200,7 @@ function genSkillsGraph(skillMap) {
     return canvas
 }
 
-function genXPGraph(xps) {
+function XPGraph(xps) {
     let canvas = document.createElement('canvas');
     canvas.setAttribute('id', 'chart');
     var xpData = xps.map(function (entity) {
@@ -214,7 +213,7 @@ function genXPGraph(xps) {
     xpData.sort(function (a, b) {return a.date - b.date;});
     for (let i = 1; i < xpData.length; i++) {xpData[i].xp += xpData[i - 1].xp;}
     var labels = xpData.map(function (data) {return data.date.toLocaleDateString();});
-    var data = xpData.map(function (data) {return bytesToSize(data.xp, "KB").amount;});
+    var data = xpData.map(function (data) {return bytesConversion(data.xp, "KB").amount;});
     var lineChart = new Chart(canvas, {
         type: 'line', 
         data: {
@@ -247,12 +246,12 @@ function genXPGraph(xps) {
 
 document.getElementById("loginForm").addEventListener("submit", function (event) {
     event.preventDefault();
-    login();
+    loginForm();
 });
 
 document.getElementById("logout").addEventListener("click", function (event) {
     event.preventDefault();
-    logout();
+    logoutButton();
 });
 
 document.getElementById("skillsButton").addEventListener("click", function () {
@@ -269,7 +268,6 @@ document.getElementById("tasksButton").addEventListener("click", function () {
 
 window.addEventListener("resize", updateCharts);
 
-// Function to show the selected chart and hide others
 function showChart(chartId) {
     const charts = ["skillChart", "auditChart", "tasksChart"];
 
@@ -305,11 +303,11 @@ function createSkillsChart(user) {
         }
     }
     let skillGraph = document.createElement('div')
-    skillGraph.append(genSkillsGraph(skillMap))
+    skillGraph.append(SkillsGraph(skillMap))
     skills.append(userSkills, skillGraph)
 }
 
-function createAuditChart(user) {
+function designAudits(user) {
     let audits = document.getElementById("auditChart");
     let auditRatio = document.createElement('h4')
     auditRatio.innerHTML = `Audits ratio`
@@ -318,23 +316,23 @@ function createAuditChart(user) {
     auditR > 0.4 ? userAuditRatio.innerHTML = `${auditR} Almost perfect!` : userAuditRatio.innerHTML = `${auditR} Be careful, buddy.`
     auditR > 0.4 ? userAuditRatio.style.color = 'hsl(181, 50%, 53%)' : userAuditRatio.style.color = 'hsl(181, 50%, 53%)'
     let auditGraph = document.createElement('div')
-    auditGraph.append(genAuditRateGraph([bytesToSize(user.totalUp, "MB").amount, bytesToSize(user.totalDown, "MB").amount]))
+    auditGraph.append(AuditGraph([bytesConversion(user.totalUp, "MB").amount, bytesConversion(user.totalDown, "MB").amount]))
     audits.append(auditRatio, auditGraph, userAuditRatio)
 }
 
-function createTasksChart(user) {
+function designTasks(user) {
     const xps = user.transactions.filter(element => element.type === "xp" && !element.path.includes("piscine") && !element.path.includes("rust"));
-    const sum = bytesToSize(xps.reduce((total, element) => total + element.amount, 0));
+    const sum = bytesConversion(xps.reduce((total, element) => total + element.amount, 0));
     let xpCount = document.getElementById("tasksChart")
     let userXP = document.createElement('p')
     userXP.innerHTML = `XP progression`
     let graphCont = document.createElement('div')
     graphCont.className = 'graph-container'
-    graphCont.append(genXPGraph(xps))
+    graphCont.append(XPGraph(xps))
     xpCount.append(userXP, graphCont)
 }
 
-function bytesToSize(bytes, size) {
+function bytesConversion(bytes, size) {
     const sizes = ["Bytes", "KB", "MB"];
     if (bytes === 0) {return "0 Byte";}
     var i = -1

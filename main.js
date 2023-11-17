@@ -119,9 +119,7 @@ function genAuditRateGraph(audits) {
         if (el == 'done') {arrow = '\u2191';} else {arrow = '\u2193';}
         yData[i] = `${arrow} ${audits[i]} MB ${el}`;
     });
-    console.log(yData)
-    console.log(audits)
-    
+        
     var barChart = new Chart(canvas, {
         type: 'bar',
         data: {
@@ -129,8 +127,8 @@ function genAuditRateGraph(audits) {
             datasets: [{
                 data: audits,
                 backgroundColor: [
-                    'hsl(88, 50%, 53%)',
-                    'hsl(0, 0%, 80%)',
+                    'hsl(181, 50%, 53%)',
+                    'hsl(59, 100%, 50%)',
                 ]
             }]
         },
@@ -160,8 +158,7 @@ function genSkillsGraph(skillMap) {
         yData.push(skill);
         xData.push(value)
     }
-    console.log(yData)
-    console.log(xData)
+
     var radarChart = new Chart(canvas, {
         type: 'radar',
         data: {
@@ -226,7 +223,7 @@ function genXPGraph(xps) {
                 label: 'Your XP',
                 data: data,
                 fill: false, 
-                borderColor: 'hsl(88, 50%, 53%)',
+                borderColor: 'hsl(181, 50%, 53%)',
                 pointBackgroundColor: 'rgba(255, 255, 255, 0.9)',
             }]
         },
@@ -318,9 +315,8 @@ function createAuditChart(user) {
     auditRatio.innerHTML = `Audits ratio`
     let userAuditRatio = document.createElement('p')
     let auditR = Math.round((user.totalUp / user.totalDown) * 10) / 10
-    console.log(auditR)
     auditR > 0.4 ? userAuditRatio.innerHTML = `${auditR} Almost perfect!` : userAuditRatio.innerHTML = `${auditR} Be careful, buddy.`
-    auditR > 0.4 ? userAuditRatio.style.color = 'hsl(88, 50%, 53%)' : userAuditRatio.style.color = 'hsl(340, 100%, 50%)'
+    auditR > 0.4 ? userAuditRatio.style.color = 'hsl(181, 50%, 53%)' : userAuditRatio.style.color = 'hsl(181, 50%, 53%)'
     let auditGraph = document.createElement('div')
     auditGraph.append(genAuditRateGraph([bytesToSize(user.totalUp, "MB").amount, bytesToSize(user.totalDown, "MB").amount]))
     audits.append(auditRatio, auditGraph, userAuditRatio)

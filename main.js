@@ -1,51 +1,4 @@
 let user = []
-
-function displayData(JWT) {
-    const query = `
-    {
-        user{
-            login
-            attrs
-            totalUp
-            totalDown
-            transactions(order_by: { createdAt: desc }) {
-                type
-                amount
-                createdAt
-                path
-            }
-            progresses{
-                object{
-                  parents{
-                    attrs
-                  }
-                }
-            }
-        }
-    }
-  `;
-
-    fetch("https://01.kood.tech/api/graphql-engine/v1/graphql", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${JWT}`
-        },
-        body: JSON.stringify({ query: query })
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            userChart(data)
-        })
-        .catch(error => {
-            console.error("Error:", error);
-        });
-}
 function loginForm() {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
@@ -102,6 +55,53 @@ function logoutButton() {
     user = []
     location.reload();
 }
+function displayData(JWT) {
+    const query = `
+    {
+        user{
+            login
+            attrs
+            totalUp
+            totalDown
+            transactions(order_by: { createdAt: desc }) {
+                type
+                amount
+                createdAt
+                path
+            }
+            progresses{
+                object{
+                  parents{
+                    attrs
+                  }
+                }
+            }
+        }
+    }
+  `;
+
+    fetch("https://01.kood.tech/api/graphql-engine/v1/graphql", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${JWT}`
+        },
+        body: JSON.stringify({ query: query })
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            userChart(data)
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+}
+
 
 function updateCharts(user) {
     createSkillsChart(user);

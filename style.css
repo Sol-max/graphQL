@@ -67,8 +67,8 @@ button:hover {
     padding: 10px;
 }
 
-#skillsChart,
-#auditsChart,
+#skillChart,
+#auditChart,
 #tasksChart {
     display: none;
 }
